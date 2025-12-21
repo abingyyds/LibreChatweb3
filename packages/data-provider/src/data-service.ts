@@ -117,6 +117,10 @@ export const login = (payload: t.TLoginUser): Promise<t.TLoginResponse> => {
   return request.post(endpoints.login(), payload);
 };
 
+export const zkpLogin = (payload: t.TZkpLoginUser): Promise<t.TZkpLoginResponse> => {
+  return request.post(endpoints.zkpLogin(), payload);
+};
+
 export const logout = (): Promise<m.TLogoutResponse> => {
   return request.post(endpoints.logout());
 };

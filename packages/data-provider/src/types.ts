@@ -391,6 +391,24 @@ export type TLoginResponse = {
   tempToken?: string;
 };
 
+export type TZkpPayload = {
+  a: [string, string];
+  b: [[string, string], [string, string]];
+  c: [string, string];
+  input: [string];
+};
+
+export type TZkpLoginUser = {
+  zkpCode: string | TZkpPayload;
+};
+
+export type TZkpLoginResponse = {
+  token?: string;
+  user?: TUser;
+  address?: string;
+  txHash?: string;
+};
+
 export type TEnable2FAResponse = {
   otpauthUrl: string;
   backupCodes: string[];

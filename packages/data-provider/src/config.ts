@@ -661,6 +661,7 @@ export type TStartupConfig = {
   socialLoginEnabled: boolean;
   passwordResetEnabled: boolean;
   emailEnabled: boolean;
+  zkpLoginEnabled: boolean;
   showBirthdayIcon: boolean;
   helpAndFaqURL: string;
   customFooter?: string;

@@ -52,6 +52,29 @@ export const useLoginUserMutation = (
   });
 };
 
+export const useZkpLoginUserMutation = (
+  options?: t.MutationOptions<t.TZkpLoginResponse, t.TZkpLoginUser, unknown, unknown>,
+): UseMutationResult<t.TZkpLoginResponse, unknown, t.TZkpLoginUser, unknown> => {
+  const queryClient = useQueryClient();
+  const clearStates = useClearStates();
+  const resetDefaultPreset = useResetRecoilState(store.defaultPreset);
+  const setQueriesEnabled = useSetRecoilState<boolean>(store.queriesEnabled);
+  return useMutation([MutationKeys.zkpLoginUser], {
+    mutationFn: (payload: t.TZkpLoginUser) => dataService.zkpLogin(payload),
+    ...(options || {}),
+    onMutate: (vars) => {
+      resetDefaultPreset();
+      clearStates();
+      queryClient.removeQueries();
+      options?.onMutate?.(vars);
+    },
+    onSuccess: (...args) => {
+      setQueriesEnabled(true);
+      options?.onSuccess?.(...args);
+    },
+  });
+};
+
 export const useRefreshTokenMutation = (
   options?: t.MutationOptions<t.TRefreshTokenResponse | undefined, undefined, unknown, unknown>,
 ): UseMutationResult<t.TRefreshTokenResponse | undefined, unknown, undefined, unknown> => {

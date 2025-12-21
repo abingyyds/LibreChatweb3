@@ -109,6 +109,7 @@ router.get('/', async function (req, res) {
       sharePointPickerGraphScope: process.env.SHAREPOINT_PICKER_GRAPH_SCOPE,
       sharePointPickerSharePointScope: process.env.SHAREPOINT_PICKER_SHAREPOINT_SCOPE,
       openidReuseTokens,
+      zkpLoginEnabled: true,
       conversationImportMaxFileSize: process.env.CONVERSATION_IMPORT_MAX_FILE_SIZE_BYTES
         ? parseInt(process.env.CONVERSATION_IMPORT_MAX_FILE_SIZE_BYTES, 10)
         : 0,

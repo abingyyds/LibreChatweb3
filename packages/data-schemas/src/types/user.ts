@@ -18,6 +18,9 @@ export interface IUser extends Document {
   githubId?: string;
   discordId?: string;
   appleId?: string;
+  zkpId?: string;
+  walletAddress?: string;
+  zkpHash?: string;
   plugins?: string[];
   twoFactorEnabled?: boolean;
   totpSecret?: string;
@@ -95,6 +98,8 @@ export interface UserFilterOptions extends CursorPaginationParams {
   githubId?: string;
   discordId?: string;
   appleId?: string;
+  zkpId?: string;
+  walletAddress?: string;
   // Date filters
   createdAfter?: string;
   createdBefore?: string;

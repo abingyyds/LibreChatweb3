@@ -106,6 +106,19 @@ const userSchema = new Schema<IUser>(
       unique: true,
       sparse: true,
     },
+    zkpId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    walletAddress: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    zkpHash: {
+      type: String,
+    },
     plugins: {
       type: Array,
     },
