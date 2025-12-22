@@ -22,3 +22,4 @@ COPY packages/data-provider/src/types.ts /app/packages/data-provider/src/types.t
 
 COPY packages/data-schemas/src/schema/user.ts /app/packages/data-schemas/src/schema/user.ts
 COPY packages/data-schemas/src/types/user.ts /app/packages/data-schemas/src/types/user.ts
+!.env.example
