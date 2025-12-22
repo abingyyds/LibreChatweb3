@@ -35,10 +35,10 @@ const userSchema = new Schema<IUser>(
     },
     email: {
       type: String,
-      required: [true, "can't be blank"],
+      required: false,
       lowercase: true,
       unique: true,
-      match: [/\S+@\S+\.\S+/, 'is invalid'],
+      sparse: true,
       index: true,
     },
     emailVerified: {
