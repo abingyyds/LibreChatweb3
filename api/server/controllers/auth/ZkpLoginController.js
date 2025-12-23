@@ -69,7 +69,8 @@ const zkpLoginController = async (req, res) => {
       const displayName = `${address.slice(0, 6)}...${address.slice(-4)}`;
       const newUserData = {
         provider: 'zkp',
-        email: '',
+        // Use undefined instead of empty string to avoid unique index conflict
+        // (sparse index only ignores null/undefined, not empty strings)
         walletAddress: address,
         zkpId: address,
         zkpHash: zkpHash,
@@ -84,12 +85,15 @@ const zkpLoginController = async (req, res) => {
     } else {
       // Update zkpHash on each login
       await updateUser(user._id, { zkpHash });
+      // Refresh user data after update
+      user = await findUser({ walletAddress: address });
       logger.info(`[ZKP Login] Updated zkpHash for existing user: ${address}`);
     }
 
     // Remove sensitive fields from user object
-    const { password: _p, totpSecret: _t, __v, ...safeUser } = user.toObject ? user.toObject() : user;
-    safeUser.id = safeUser._id.toString();
+    const userObj = user.toObject ? user.toObject() : user;
+    const { password: _p, totpSecret: _t, __v, ...safeUser } = userObj;
+    safeUser.id = (safeUser._id || user._id).toString();
 
     // Set authentication tokens
     const token = await setAuthTokens(user._id, res);
