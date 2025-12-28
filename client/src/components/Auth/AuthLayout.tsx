@@ -64,7 +64,7 @@ function AuthLayout({
           <img
             src="assets/logo.svg"
             className="h-full w-full object-contain"
-            alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'LibreChat' })}
+            alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'AI.web3.club' })}
           />
         </div>
       </BlinkAnimation>
@@ -76,12 +76,28 @@ function AuthLayout({
       <main className="flex flex-grow items-center justify-center">
         <div className="w-authPageWidth overflow-hidden bg-white px-6 py-4 dark:bg-gray-900 sm:max-w-md sm:rounded-lg">
           {!hasStartupConfigError && !isFetching && header && (
-            <h1
-              className="mb-4 text-center text-3xl font-semibold text-black dark:text-white"
-              style={{ userSelect: 'none' }}
-            >
-              {header}
-            </h1>
+            <>
+              {/* eslint-disable i18next/no-literal-string */}
+              <p className="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                This product is for internal use by members of{' '}
+                <a
+                  href="https://ai.web3.club"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  AI.web3.club
+                </a>
+                .
+              </p>
+              {/* eslint-enable i18next/no-literal-string */}
+              <h1
+                className="mb-4 text-center text-3xl font-semibold text-black dark:text-white"
+                style={{ userSelect: 'none' }}
+              >
+                {header}
+              </h1>
+            </>
           )}
           {children}
           {!pathname.includes('2fa') &&

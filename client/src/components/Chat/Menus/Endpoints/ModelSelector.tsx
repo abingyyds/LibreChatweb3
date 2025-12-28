@@ -19,7 +19,7 @@ function ModelSelectorContent() {
   const localize = useLocalize();
 
   const {
-    // LibreChat
+    // AI.web3.club
     agentsMap,
     modelSpecs,
     mappedEndpoints,
