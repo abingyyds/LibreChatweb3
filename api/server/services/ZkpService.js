@@ -6,7 +6,7 @@ const { logger } = require('@librechat/data-schemas');
 const PROOF_OF_OWNERSHIP_ADDRESS = '0x7587CA385f1e10c411638003dA0f1bd3C99b919e';
 const CLUB_MANAGER_ADDRESS = '0xd4BAB0d82948955B09760F26F5EDd5E19F2Bee55';
 const MEMBERSHIP_QUERY_ADDRESS = '0x2A152405afB201258D66919570BbD4625455a65f';
-const REQUIRED_CLUB_NAME = 'justhub';
+const REQUIRED_CLUB_NAME = 'ai';
 
 const abi = parseAbi([
   'function verifyProof(uint256[2] a, uint256[2][2] b, uint256[2] c, uint256[1] input) returns (address hashDeployer, bool isValid)',
