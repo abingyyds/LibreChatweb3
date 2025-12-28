@@ -45,7 +45,7 @@ export default function Footer({ className }: { className?: string }) {
       ? config.customFooter
       : '[AI.web3.club ' +
         Constants.VERSION +
-        '](https://librechat.ai) - ' +
+        '](https://ai.web3.club/) - ' +
         localize('com_ui_latest_footer')
   ).split('|');
 

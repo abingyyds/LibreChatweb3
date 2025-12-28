@@ -20,6 +20,10 @@ const membershipQueryAbi = parseAbi([
   'function checkDetailedMembership(address member, string domainName) view returns (bool isPermanent, bool isTemporary, bool isTokenBased, bool isCrossChain)',
 ]);
 
+const hashStatusAbi = parseAbi([
+  'function getHashStatus(bytes32 _hash) view returns (bool isActive, address deployer, bool exists)',
+]);
+
 /**
  * @typedef {Object} ZkpPayload
  * @property {[string, string]} a
@@ -199,8 +203,65 @@ async function checkClubMembership(userAddress) {
   }
 }
 
+/**
+ * Check if a ZKP hash is still valid (not revoked)
+ * @param {string} zkpHash - The hash from ZKP credential (input[0] from zkpCode)
+ * @returns {Promise<{isActive: boolean, deployer: string, exists: boolean}>}
+ */
+async function checkZkpStatus(zkpHash) {
+  const { publicClient } = getClients();
+
+  try {
+    // Convert the decimal string to bytes32 hex
+    const hashBigInt = BigInt(zkpHash);
+    const hashHex = `0x${hashBigInt.toString(16).padStart(64, '0')}`;
+
+    const result = await publicClient.readContract({
+      address: PROOF_OF_OWNERSHIP_ADDRESS,
+      abi: hashStatusAbi,
+      functionName: 'getHashStatus',
+      args: [hashHex],
+    });
+
+    const [isActive, deployer, exists] = result;
+
+    return {
+      isActive,
+      deployer,
+      exists,
+    };
+  } catch (error) {
+    logger.error('[ZKP] Error checking ZKP status:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verify if a user's ZKP credential is still valid
+ * @param {string | null | undefined} zkpHash - The hash stored in user's record
+ * @returns {Promise<boolean>} true if valid, false if revoked or invalid
+ */
+async function isZkpValid(zkpHash) {
+  if (!zkpHash) {
+    // No ZKP hash means user logged in with wallet, consider valid
+    return true;
+  }
+
+  try {
+    const status = await checkZkpStatus(zkpHash);
+    // User is valid if the hash exists and is active
+    return status.exists && status.isActive;
+  } catch (error) {
+    logger.error('[ZKP] Error validating ZKP:', error);
+    // Be strict and deny access on error
+    return false;
+  }
+}
+
 module.exports = {
   parseZkpCode,
   verifyZkpProof,
   checkClubMembership,
+  checkZkpStatus,
+  isZkpValid,
 };

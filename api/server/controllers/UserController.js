@@ -34,6 +34,7 @@ const {
 } = require('~/db/models');
 const { updateUserPluginAuth, deleteUserPluginAuth } = require('~/server/services/PluginService');
 const { verifyEmail, resendVerificationEmail } = require('~/server/services/AuthService');
+const { isZkpValid, checkClubMembership } = require('~/server/services/ZkpService');
 const { getMCPManager, getFlowStateManager, getMCPServersRegistry } = require('~/config');
 const { needsRefresh, getNewS3URL } = require('~/server/services/Files/S3/crud');
 const { processDeleteRequest } = require('~/server/services/Files/process');
@@ -47,6 +48,48 @@ const getUserController = async (req, res) => {
   const appConfig = await getAppConfig({ role: req.user?.role });
   /** @type {IUser} */
   const userData = req.user.toObject != null ? req.user.toObject() : { ...req.user };
+
+  // Check ZKP and club membership validity for users with walletAddress
+  if (userData.walletAddress) {
+    try {
+      // Validate ZKP hash on-chain
+      const zkpValid = await isZkpValid(userData.zkpHash);
+      if (!zkpValid) {
+        logger.warn(
+          `[getUserController] ZKP hash invalid or revoked for user: ${userData._id}, wallet: ${userData.walletAddress}`,
+        );
+        // Clear session and return 401
+        await deleteAllUserSessions({ userId: userData._id.toString() });
+        return res.status(401).json({
+          error: 'ZKP_INVALID',
+          message: 'Your ZKP credential has been revoked or is no longer valid',
+        });
+      }
+
+      // Validate club membership
+      const clubMembership = await checkClubMembership(userData.walletAddress);
+      if (!clubMembership.isMember && !clubMembership.isOwner) {
+        logger.warn(
+          `[getUserController] User ${userData._id} is not a member of club ${clubMembership.clubName}`,
+        );
+        // Clear session and return 401
+        await deleteAllUserSessions({ userId: userData._id.toString() });
+        return res.status(401).json({
+          error: 'NOT_CLUB_MEMBER',
+          message: `You are no longer a member of ${clubMembership.clubName}`,
+        });
+      }
+    } catch (error) {
+      logger.error('[getUserController] Error validating ZKP/club membership:', error);
+      // On validation error, deny access for security
+      await deleteAllUserSessions({ userId: userData._id.toString() });
+      return res.status(401).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Failed to validate your credentials',
+      });
+    }
+  }
+
   /**
    * These fields should not exist due to secure field selection, but deletion
    * is done in case of alternate database incompatibility with Mongo API
